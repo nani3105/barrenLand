@@ -1,3 +1,5 @@
+package com.kurra.barrenland;
+
 import java.util.*;
 
 /**
@@ -37,10 +39,10 @@ public class BarrenLandAnalysis {
 
     public List<Integer> getFertileLands(List<List<Integer>> barrenLands) {
         // Fill barren land with true in Farm land.
-        this.fillBarrenLands(farm, barrenLands);
+        this.fillBarrenLands(barrenLands);
 
         // Calculate Fertile land areas using DFS.
-        List<Integer> fertileAreas = this.calculateFertileLandAreas(farm);
+        List<Integer> fertileAreas = this.calculateFertileLandAreas();
         return fertileAreas;
     }
 
@@ -49,20 +51,19 @@ public class BarrenLandAnalysis {
     /**
      * Calculate Fertile Land Areas using DFS.
      *
-     * @param farm
      * @return List of sorted fertile land areas.
      */
-    private List<Integer> calculateFertileLandAreas(boolean[][] farm) {
-        if (farm == null) {
+    private List<Integer> calculateFertileLandAreas() {
+        if (this.farm == null) {
             this.throwInputException("Invalid input");
         }
 
         List<Integer> fertileLandAreas = new ArrayList<>();
 
-        for (int i = 0; i < farm.length; i++) {
-            for (int j = 0; j < farm[i].length; j++) {
-                if (!farm[i][j]) {
-                    fertileLandAreas.add(this.calculateFertileLandAreaIterative(farm, i, j));
+        for (int i = 0; i < this.farm.length; i++) {
+            for (int j = 0; j < this.farm[i].length; j++) {
+                if (!this.farm[i][j]) {
+                    fertileLandAreas.add(this.calculateFertileLandAreaIterative(i, j));
                 }
             }
         }
@@ -75,12 +76,11 @@ public class BarrenLandAnalysis {
     /**
      * Traverse Fertile Land area using DFS with iteration. Will traverse Down, Up, Back and Front of each fertile cell until entire fertile area is covered.
      *
-     * @param farm
      * @param coordinateX
      * @param coordinateY
      * @return Area of each Fertile land.
      */
-    private Integer calculateFertileLandAreaIterative(boolean[][] farm, int coordinateX, int coordinateY) {
+    private Integer calculateFertileLandAreaIterative(int coordinateX, int coordinateY) {
 
         Stack<Integer[]> stack = new Stack<>();
         stack.push(new Integer[]{coordinateX, coordinateY});
@@ -89,19 +89,19 @@ public class BarrenLandAnalysis {
             Integer[] point = stack.pop();
             coordinateX = point[0];
             coordinateY = point[1];
-            if (!farm[coordinateX][coordinateY]) {
+            if (!this.farm[coordinateX][coordinateY]) {
                 fertileLandArea++;
-                farm[coordinateX][coordinateY] = true;
-                if (this.isWithIn(coordinateX - 1, 0, this.width) && !farm[coordinateX - 1][coordinateY]) {
+                this.farm[coordinateX][coordinateY] = true;
+                if (this.isWithIn(coordinateX - 1, 0, this.width) && !this.farm[coordinateX - 1][coordinateY]) {
                     stack.push(new Integer[]{coordinateX - 1, coordinateY});
                 }
-                if (this.isWithIn(coordinateX + 1, 0, this.width) && !farm[coordinateX + 1][coordinateY]) {
+                if (this.isWithIn(coordinateX + 1, 0, this.width) && !this.farm[coordinateX + 1][coordinateY]) {
                     stack.push(new Integer[]{coordinateX + 1, coordinateY});
                 }
-                if (this.isWithIn(coordinateY - 1, 0, this.height) && !farm[coordinateX][coordinateY - 1]) {
+                if (this.isWithIn(coordinateY - 1, 0, this.height) && !this.farm[coordinateX][coordinateY - 1]) {
                     stack.push(new Integer[]{coordinateX, coordinateY - 1});
                 }
-                if (this.isWithIn(coordinateY + 1, 0, this.height) && !farm[coordinateX][coordinateY + 1]) {
+                if (this.isWithIn(coordinateY + 1, 0, this.height) && !this.farm[coordinateX][coordinateY + 1]) {
                     stack.push(new Integer[]{coordinateX, coordinateY + 1});
                 }
             }
@@ -112,12 +112,11 @@ public class BarrenLandAnalysis {
     /**
      * Fill Barren lands in Farm as false.
      *
-     * @param farm
      * @param barrenLands
      */
-    private void fillBarrenLands(boolean[][] farm, List<List<Integer>> barrenLands) {
+    private void fillBarrenLands(List<List<Integer>> barrenLands) {
 
-        if (farm == null || barrenLands == null) {
+        if (this.farm == null || barrenLands == null) {
             this.throwInputException("Invalid input");
         }
 
@@ -130,7 +129,7 @@ public class BarrenLandAnalysis {
             }
             for (int i = barrenLand.get(0); i <= barrenLand.get(2); i++) {
                 for (int j = barrenLand.get(1); j <= barrenLand.get(3); j++) {
-                    farm[i][j] = true;
+                    this.farm[i][j] = true;
                 }
             }
         }
@@ -206,8 +205,8 @@ public class BarrenLandAnalysis {
      * @return true if a valid barren land is formed otherwise false.
      */
     private boolean validBarrenLand(int x1, int y1, int x2, int y2) {
-        return isWithIn(x1, -1, this.width) && isWithIn(y1, -1, this.height) // bottom - left is within grid
-                && isWithIn(x2, -1, this.width) && isWithIn(y2, -1, this.height) // top - right is within grid
+        return isWithIn(x1, 0, this.width) && isWithIn(y1, 0, this.height) // bottom - left is within grid
+                && isWithIn(x2, 0, this.width) && isWithIn(y2, 0, this.height) // top - right is within grid
                 && isWithIn(x2, x1, this.width) && isWithIn(y2, y1, this.height)
                 && !isPoint(x1, y1, x2, y2) && !isStraightLine(x1, y1, x2, y2);
     }
@@ -229,7 +228,7 @@ public class BarrenLandAnalysis {
      * @return return true with x is in range [a, b) otherwise false.
      */
     private boolean isWithIn(int x, int a, int b) {
-        return (x > a && x < b);
+        return (x >= a && x < b);
     }
 
     /**

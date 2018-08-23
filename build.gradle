@@ -2,6 +2,7 @@ group 'com.kurra'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'groovy'
 
 sourceCompatibility = 1.8
 
@@ -14,4 +15,21 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
     compile 'org.codehaus.groovy:groovy-all:2.3.11'
     testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+}
+
+jar {
+    from(configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+
+    manifest {
+        attributes 'Implementation-Title': 'Barren-Land',
+                'Implementation-Version': version,
+                'Built-By': 'Niranjan Kurra',
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version'),
+                'Main-Class': 'com.kurra.barrenland.BarrenLandAnalysis'
+    }
 }
